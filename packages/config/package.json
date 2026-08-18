@@ -1,0 +1,9 @@
+{
+  "name": "@caixa-1/config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

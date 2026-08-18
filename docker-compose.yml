@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: caixa-1-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: caixa1
+      POSTGRES_PASSWORD: caixa1_dev
+      POSTGRES_DB: caixa1
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U caixa1 -d caixa1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
