@@ -12,6 +12,8 @@
     "format:check": "prettier . --check",
     "lint": "eslint .",
     "build": "npm run build --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
@@ -22,7 +24,8 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.8.1",
     "prettier": "^3.9.6",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
