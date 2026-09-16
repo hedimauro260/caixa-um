@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+
+# Build
+dist
+.turbo
+.next
+
+# Cloudflare Workers
+.wrangler
+.worker-configuration.d.ts
+
+# Dev vars (local secrets)
+.dev.vars
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# OS
+.DS_Store
