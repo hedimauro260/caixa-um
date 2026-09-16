@@ -1,3 +1,10 @@
 import config from '@caixa1/config/eslint'
 
-export default config
+export default [
+  ...config,
+  {
+    rules: {
+      'no-console': 'off',
+    },
+  },
+]

@@ -1,2 +1,6 @@
 export * from './client'
-export * as schema from './schema'
+export { users } from './schema/users'
+export { accounts } from './schema/accounts'
+export { categories } from './schema/categories'
+export { transactions } from './schema/transactions'
+export { journal } from './schema/journal'

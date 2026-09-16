@@ -1,0 +1,221 @@
+### Caixa-um API — coleção de requisições autenticadas
+### Use com a extensão "REST Client" do VS Code.
+###
+### 1. Suba a API:  pnpm --filter @caixa1/api dev  (porta 8787)
+### 2. Preencha @token com um JWT de sessão do Clerk (crie no painel do Clerk,
+###    use um token de teste de uma org/user, ou gere via Web Session Token).
+### 3. Preencha @accountId/@categoryId/@txId com IDs retornados nas respostas.
+
+@baseUrl = http://localhost:8787
+@token = COLE-AQUI-SEU-JWT-DO-CLERK
+
+# @accountId = troque pelo id retornado no POST /accounts
+# @categoryId = troque pelo id retornado no POST /categories
+# @txId = troque pelo id retornado no POST /transactions
+
+### ---------------------------------------------------------------------------
+### Health (PÚBLICO — sem token)
+### ---------------------------------------------------------------------------
+
+GET {{baseUrl}}/health
+
+### ---------------------------------------------------------------------------
+### Sem token → deve dar 401
+### ---------------------------------------------------------------------------
+
+GET {{baseUrl}}/accounts
+
+### ---------------------------------------------------------------------------
+### Accounts
+### ---------------------------------------------------------------------------
+
+### Listar contas
+GET {{baseUrl}}/accounts
+Authorization: Bearer {{token}}
+
+### Criar conta (saldo inicial vira transação "Saldo inicial")
+POST {{baseUrl}}/accounts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Conta Corrente",
+  "type": "checking",
+  "currency": "BRL",
+  "initialBalance": 0
+}
+
+### Buscar conta
+GET {{baseUrl}}/accounts/{{accountId}}
+Authorization: Bearer {{token}}
+
+### Atualizar conta
+PATCH {{baseUrl}}/accounts/{{accountId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Conta Corrente Renomeada"
+}
+
+### Saldo da conta (balanço vivo; arquivadas deixam de contar)
+GET {{baseUrl}}/accounts/{{accountId}}/balance
+Authorization: Bearer {{token}}
+
+### Arquivar conta
+POST {{baseUrl}}/accounts/{{accountId}}/archive
+Authorization: Bearer {{token}}
+
+### Desarquivar conta
+POST {{baseUrl}}/accounts/{{accountId}}/unarchive
+Authorization: Bearer {{token}}
+
+### Excluir conta
+DELETE {{baseUrl}}/accounts/{{accountId}}
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------------------------
+### Categories
+### ---------------------------------------------------------------------------
+
+### Listar categorias
+GET {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+
+### Criar categoria
+POST {{baseUrl}}/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Supermercado",
+  "type": "expense",
+  "icon": "🛒",
+  "color": "#22c55e"
+}
+
+### Atualizar categoria
+PATCH {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Mercado"
+}
+
+### Excluir categoria
+DELETE {{baseUrl}}/categories/{{categoryId}}
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------------------------
+### Transactions
+### ---------------------------------------------------------------------------
+
+### Resumo do período ATENÇÃO: rota estática ANTES de /:id
+GET {{baseUrl}}/transactions/summary?startDate=2026-01-01&endDate=2026-01-31
+Authorization: Bearer {{token}}
+
+### Criar receita (income)
+POST {{baseUrl}}/transactions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "income",
+  "accountId": "{{accountId}}",
+  "categoryId": "{{categoryId}}",
+  "amount": 100.0,
+  "description": "Salário",
+  "date": "2026-01-05"
+}
+
+### Criar despesa (expense)
+POST {{baseUrl}}/transactions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "expense",
+  "accountId": "{{accountId}}",
+  "categoryId": "{{categoryId}}",
+  "amount": 40.0,
+  "description": "Mercado",
+  "date": "2026-01-06"
+}
+
+### Criar transferência (transfer) — precisa de duas contas
+### accountId2 = id de outra conta criada no POST /accounts
+POST {{baseUrl}}/transactions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "transfer",
+  "fromAccountId": "{{accountId}}",
+  "toAccountId": "{{accountId2}}",
+  "amount": 30.0,
+  "description": "Pix",
+  "date": "2026-01-07"
+}
+
+### Listar transações (paginado, filtra por arquivadas por padrão)
+GET {{baseUrl}}/transactions?type=expense&limit=10&offset=0
+Authorization: Bearer {{token}}
+
+### Buscar transação
+GET {{baseUrl}}/transactions/{{txId}}
+Authorization: Bearer {{token}}
+
+### Atualizar transação (valor/descrição/data; reaplica efeito no saldo)
+PATCH {{baseUrl}}/transactions/{{txId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Mercadinho",
+  "amount": 45.0
+}
+
+### Arquivar transação (reverte o efeito no saldo, some do journal)
+POST {{baseUrl}}/transactions/{{txId}}/archive
+Authorization: Bearer {{token}}
+
+### Desarquivar transação (reaplica o efeito no saldo)
+POST {{baseUrl}}/transactions/{{txId}}/unarchive
+Authorization: Bearer {{token}}
+
+### Excluir transação
+DELETE {{baseUrl}}/transactions/{{txId}}
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------------------------
+### Journal (read-only — espelha transações aplicadas)
+### ---------------------------------------------------------------------------
+
+### Exportar CSV ATENÇÃO: rota estática ANTES de /:id
+GET {{baseUrl}}/journal/export?startDate=2026-01-01&endDate=2026-01-31
+Authorization: Bearer {{token}}
+
+### Listar entries
+GET {{baseUrl}}/journal?accountId={{accountId}}&limit=50&offset=0
+Authorization: Bearer {{token}}
+
+### Entry por ID (formato composto: <txId>-out / <txId>-in em transferências)
+GET {{baseUrl}}/journal/{{txId}}-out
+Authorization: Bearer {{token}}
+
+### ---------------------------------------------------------------------------
+### Envelope de erro (exemplo de validação)
+### ---------------------------------------------------------------------------
+
+### Corpo inválido → 400 VALIDATION_ERROR
+POST {{baseUrl}}/transactions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "type": "income",
+  "accountId": "nao-e-um-uuid",
+  "amount": 0,
+  "date": "01/01/2026"
+}

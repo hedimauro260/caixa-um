@@ -4,7 +4,10 @@ import * as schema from './schema'
 
 export function createDb(databaseUrl: string) {
   const sql = neon(databaseUrl)
-  return drizzle(sql, { schema })
+  return drizzle(sql, {
+    schema,
+    casing: 'snake_case',
+  })
 }
 
 export type Database = ReturnType<typeof createDb>
