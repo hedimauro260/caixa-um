@@ -7,11 +7,14 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "dev": "pnpm -r --parallel run dev",
+    "dev:api": "pnpm --filter @caixa1/api dev",
+    "dev:lab": "pnpm --filter @caixa1/lab dev",
+    "dev:workstation": "pnpm --filter @caixa1/workstation dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "clean": "pnpm -r run clean && rm -rf node_modules"
   },
   "devDependencies": {
     "turbo": "^2.3.0",

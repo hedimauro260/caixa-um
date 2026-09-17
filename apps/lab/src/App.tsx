@@ -1,4 +1,11 @@
 import {
+  SignedIn,
+  SignedOut,
+  SignIn,
+  UserButton,
+  useUser,
+} from '@clerk/clerk-react'
+import {
   useAccounts,
   useCategories,
   useCreateAccount,
@@ -17,7 +24,8 @@ import {
   parseDate,
 } from '@caixa1/core'
 
-export function App() {
+function Dashboard() {
+  const { user } = useUser()
   const accounts = useAccounts()
   const categories = useCategories()
   const createAccount = useCreateAccount()
@@ -72,7 +80,19 @@ export function App() {
 
   return (
     <div style={{ fontFamily: 'monospace', padding: 40 }}>
-      <h1>CAIXA/1 — Lab</h1>
+      <header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <h1>CAIXA/1 — Lab</h1>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {user?.primaryEmailAddress?.emailAddress}
+          <UserButton />
+        </span>
+      </header>
       <p>Seu dinheiro, em registro.</p>
 
       <hr />
@@ -217,5 +237,34 @@ export function App() {
         <li>parseDate('2025-02-30') = {String(parseDate('2025-02-30'))}</li>
       </ul>
     </div>
+  )
+}
+
+export function App() {
+  return (
+    <>
+      <SignedOut>
+        <div
+          style={{
+            fontFamily: 'monospace',
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 24,
+          }}
+        >
+          <h1>CAIXA/1</h1>
+          <p>Entre com sua conta para continuar.</p>
+          <div style={{ marginTop: 24 }}>
+            <SignIn />
+          </div>
+        </div>
+      </SignedOut>
+      <SignedIn>
+        <Dashboard />
+      </SignedIn>
+    </>
   )
 }
