@@ -1,0 +1,43 @@
+:root {
+  font-family: monospace;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: #0a0a0a;
+  color: #e8e6e3;
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  padding: 8px 16px;
+  background: #1a1a1a;
+  color: #ffb000;
+  border: 1px solid #333;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #222;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+pre {
+  background: #141414;
+  padding: 12px;
+  border: 1px solid #2a2a2a;
+  overflow-x: auto;
+  font-size: 12px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #2a2a2a;
+  margin: 24px 0;
+}

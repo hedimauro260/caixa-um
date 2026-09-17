@@ -1,5 +1,5 @@
-import { StrictMode } from 'react'
-import { useMemo } from 'react'
+import { StrictMode, useMemo } from 'react'
+import type { ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ClerkProvider, useAuth } from '@clerk/clerk-react'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -18,7 +18,7 @@ if (!CLERK_KEY) {
   throw new Error('VITE_CLERK_PUBLISHABLE_KEY ausente no .env')
 }
 
-function ApiProvider({ children }: { children: React.ReactNode }) {
+function ApiProvider({ children }: { children: ReactNode }) {
   const { getToken } = useAuth()
 
   const api = useMemo(
